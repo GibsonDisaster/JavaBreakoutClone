@@ -36,6 +36,8 @@ public class PlayScreen extends BasicGameState {
     }
     
     public void setupBricks() {
+        //each row starts at an x value of 10, and then grows by 60 each time
+        //to space out the bricks evenly
         int r1 = 10;
         int r2 = 10;
         int r3 = 10;
@@ -69,23 +71,28 @@ public class PlayScreen extends BasicGameState {
 
     @Override
     public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
+        //Drawing player
         g.fillRect(player.getX(), player.getY(), player.getWidth(), player.getHeight());
         
+        //Drawing balls
         for (Ball ball : balls) {
             g.fillRect(ball.getX(), ball.getY(), ball.getWidth(), ball.getHeight());
         }
         
+        //Drawing bricks
         for (Brick b : bricks) {
             if (b.isVisible())
                 g.fillRect(b.getX(), b.getY(), b.getWidth(), b.getHeight());
         }
         
+        //Drawing powerups and setting appropriate colors for each
         for (PowerUp pup : powers) {
             g.setColor(pup.getColor());
             g.fillRect(pup.getX(), pup.getY(), pup.getWidth(), pup.getHeight());
             g.setColor(Color.white);
         }
         
+        //Writing game info to the screen
         g.drawString("Score: " + Integer.toString(ball.getScore()), 20, 550);
         g.drawString("Lives: " + Integer.toString(player.getHealth()), 700, 550);
     }
@@ -94,37 +101,39 @@ public class PlayScreen extends BasicGameState {
     public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
         Input input = gc.getInput();
         
+        //Movement and exiting
         if (input.isKeyPressed(input.KEY_ESCAPE))
             System.exit(0);
         else if (input.isKeyDown(input.KEY_RIGHT))
             player.move("right");
         else if (input.isKeyDown(input.KEY_LEFT))
             player.move("left");  
-        else if (input.isMousePressed(0))
-            balls.add(new Ball(400, 300, 10, 10, true));
             
-        
+        //Shooting the ball
         if (input.isKeyPressed(input.KEY_SPACE)) {
             for (Ball b : balls) {
                 b.setShot(true);
             }
         }
         
+        //Updating the balls
         for (Ball ball : balls) {
             if (ball.isShot()) {
                 ball.move();
                 ball.collide(player);
-                if (ball.getY() > 600) {
+                if (ball.getY() > 600) { //if the ball goes below the player, reset
                     player.setHealth(-1);
                     ball.setX(player.getX()+player.getWidth()/2-10);
                     ball.setY(player.getY() - 10);
                     ball.setShot(false);
                 }
+                
             } else if (ball.isShot() == false) {
                 ball.setX(player.getX()+player.getWidth()/2-10);
                 ball.setY(player.getY() - 10);
             }
             
+            //Grabbing functionality, enables player to re-shoot ball;
             if (input.isKeyPressed(input.KEY_G)) {
                 ball.setX(player.getX()+player.getWidth()/2-10);
                 ball.setY(player.getY()-10);
@@ -132,6 +141,7 @@ public class PlayScreen extends BasicGameState {
             }
         }
         
+        //Drawing bricks
         for (Brick b : bricks) {
             if (b.isVisible()) {
                 for (Ball ba : balls) {
@@ -140,6 +150,7 @@ public class PlayScreen extends BasicGameState {
             }
         }
         
+        //Drawing powerups
         for (PowerUp pup : powers) {
             pup.update();
             if (collide(pup, player)) {
@@ -148,6 +159,7 @@ public class PlayScreen extends BasicGameState {
             }
         }
         
+        //Debugging and lose condition
         if (input.isKeyDown(input.KEY_W))
             win(sbg);
         else if (player.getHealth() <= 0)

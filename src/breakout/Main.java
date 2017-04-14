@@ -13,6 +13,7 @@ import org.newdawn.slick.state.StateBasedGame;
 
 public class Main extends StateBasedGame {
     
+    //Declaring Screen ID's
     public static final int startScreen = 0;
     public static final int playScreen = 1;
     public static final int loseScreen = 2;
@@ -43,12 +44,14 @@ public class Main extends StateBasedGame {
     
     @Override
     public void initStatesList(GameContainer gc) throws SlickException {
+        //Initializing the Screens and entering the start menu
         this.getState(startScreen).init(gc, this);
         this.getState(winScreen).init(gc, this);
         this.getState(loseScreen).init(gc, this);
         this.enterState(startScreen);
     }
     
+    //Getters and Setters
     public static int getWIDTH() {
         return WIDTH;
     }
